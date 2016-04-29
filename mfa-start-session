@@ -22,9 +22,9 @@ fi
 PROFILE=$1
 MFAARN="$(aws --profile $PROFILE --output json iam list-mfa-devices | jq -r '.MFADevices[].SerialNumber')"
 
-echo -n "Enter MFA token code for $MFAARN: "
+echo -n "Enter MFA token code for $MFAARN: " >/dev/stderr
 read -s MFACODE
-echo ""
+echo "" >/dev/stderr
 
 # default token lifetime 12hrs: --duration-seconds 43200s
 STS="$(aws --profile $PROFILE sts get-session-token --serial-number $MFAARN --token-code $MFACODE)"
