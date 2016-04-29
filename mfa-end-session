@@ -1,0 +1,11 @@
+#!/bin/bash
+# usage: $(mfa-end-session)
+#
+# note: poor man's solution! does not appear to be a way to terminate temporary
+# session tokens via API or Console, so we have to wipe memory of it. should be
+# done in all shells that had the session token.
+#
+echo "Clearing session tokens from this shell" > /dev/stderr
+echo unset AWS_ACCESS_KEY_ID
+echo unset AWS_SECRET_ACCESS_KEY
+echo unset AWS_SESSION_TOKEN
