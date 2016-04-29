@@ -1,0 +1,36 @@
+#!/bin/bash
+# helper script to create temporary credentials for MFA users
+function usage {
+    msg=$1
+    if [ -n "$msg" ]; then
+        echo "error: $msg"
+    fi
+    echo "Usage: $0 <profile>"
+    exit 1
+}
+
+if [[ $# -ne 1 ]]; then
+    usage "no profile specified"
+fi
+if ! which jq 2>&1 > /dev/null ; then
+    usage "error: Please install 'jq'."
+fi
+if ! which aws 2>&1 > /dev/null ; then
+    usage "error: Please install 'awscli'."
+fi
+
+PROFILE=$1
+MFAARN="$(aws --profile $PROFILE --output json iam list-mfa-devices | jq -r '.MFADevices[].SerialNumber')"
+
+echo -n "Enter MFA token code for $MFAARN: "
+read -s MFACODE
+echo ""
+
+# default token lifetime 12hrs: --duration-seconds 43200s
+STS="$(aws --profile $PROFILE sts get-session-token --serial-number $MFAARN --token-code $MFACODE)"
+echo "Token expires on $(echo $STS | jq -r .Credentials.Expiration)"
+echo 
+echo export AWS_ACCESS_KEY_ID="$(echo $STS | jq -r .Credentials.AccessKeyId)"
+echo export AWS_SECRET_ACCESS_KEY="$(echo $STS | jq -r .Credentials.SecretAccessKey )"
+echo export AWS_SESSION_TOKEN="$(echo $STS | jq -r .Credentials.SessionToken)"
+echo 
