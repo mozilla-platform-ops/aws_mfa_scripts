@@ -3,9 +3,9 @@
 function usage {
     msg=$1
     if [ -n "$msg" ]; then
-        echo "error: $msg"
+        echo "error: $msg" > /dev/stderr
     fi
-    echo "Usage: $0 <profile>"
+    echo "Usage: $0 <profile>" > /dev/stderr
     exit 1
 }
 
@@ -28,9 +28,10 @@ echo ""
 
 # default token lifetime 12hrs: --duration-seconds 43200s
 STS="$(aws --profile $PROFILE sts get-session-token --serial-number $MFAARN --token-code $MFACODE)"
-echo "Token expires on $(echo $STS | jq -r .Credentials.Expiration)"
-echo 
+
+# print expiry to stderr so that people will see it even when using
+# $(mfa-start-session)
+echo "Token expires on $(echo $STS | jq -r .Credentials.Expiration)" > /dev/stderr
 echo export AWS_ACCESS_KEY_ID="$(echo $STS | jq -r .Credentials.AccessKeyId)"
 echo export AWS_SECRET_ACCESS_KEY="$(echo $STS | jq -r .Credentials.SecretAccessKey )"
 echo export AWS_SESSION_TOKEN="$(echo $STS | jq -r .Credentials.SessionToken)"
-echo 
