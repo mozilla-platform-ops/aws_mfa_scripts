@@ -69,3 +69,12 @@ the following to clear them:
 ```bash
 unset AWS_SESSION_TOKEN AWS_SECRET_ACCESS_KEY AWS_ACCESS_KEY_ID
 ```
+
+Authors
+=======
+Created by [Kendall Libby](https://github.com/klibby)
+
+License
+=======
+Mozilla Public License, version 2.0. See LICENSE for full details.
+
