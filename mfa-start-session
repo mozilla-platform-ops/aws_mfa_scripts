@@ -27,7 +27,7 @@ read -s MFACODE
 echo "" >/dev/stderr
 
 # default token lifetime 12hrs: --duration-seconds 43200s
-STS="$(aws --profile $PROFILE sts get-session-token --serial-number $MFAARN --token-code $MFACODE)"
+STS="$(aws --profile $PROFILE --output json sts get-session-token --serial-number $MFAARN --token-code $MFACODE)"
 
 # print expiry to stderr so that people will see it even when using
 # $(mfa-start-session)
